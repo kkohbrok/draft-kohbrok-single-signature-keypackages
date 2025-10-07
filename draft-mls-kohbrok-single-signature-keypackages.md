@@ -9,17 +9,17 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+# area: AREA
+# workgroup: WG Working Group
 keyword:
  - mls
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+#  group: WG
+#  type: Working Group
+#  mail: WG@example.com
+#  arch: https://example.com/WG
+  github: "kkohbrok/draft-kohbrok-single-signature-keypackages"
+  latest: "https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/draft-mls-kohbrok-single-signature-keypackages.html"
 
 author:
  -
