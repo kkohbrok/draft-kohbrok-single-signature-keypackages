@@ -9,19 +9,23 @@ number:
 date:
 consensus: true
 v: 3
-# area: AREA
-# workgroup: WG Working Group
+area: "Security"
+workgroup: "Messaging Layer Security"
 keyword:
  - mls
 venue:
-#  group: WG
-#  type: Working Group
-#  mail: WG@example.com
-#  arch: https://example.com/WG
+  group: "Messaging Layer Security"
+  type: "Working Group"
+  mail: "mls@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/mls/"
   github: "kkohbrok/draft-kohbrok-single-signature-keypackages"
   latest: "https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/draft-mls-kohbrok-single-signature-keypackages.html"
 
 author:
+ -
+    fullname: Raphael Robert
+    organization: Phoenix R&D
+    email: ietf@raphaelrobert.com
  -
     fullname: Konrad Kohbrok
     organization: Phoenix R&D
@@ -42,12 +46,71 @@ TODO Abstract
 
 # Introduction
 
-TODO Introduction
+MLS KeyPackages require two signatures: One over the LeafNode and one over the
+KeyPackage around it. This draft introduced a LeafNode component that contains a
+hash over the KeyPackage fields surrounding the LeafNode. As a consequenve,
+verifying the LeafNode also verifies the KeyPackage.
 
+Saving a signature is significant, especially in the context of PQ-secure
+signature schemes such as ML-DSA, where signatures are multiple orders of
+magnitude larger than those of most non-PQ signature schemes.
 
-# Conventions and Definitions
+# Single Signature KeyPackages
 
-{::boilerplate bcp14-tagged}
+This document requests the registration of the
+`mls_single_signature_key_package` WireFormat and extends the select statement
+in the definition of MLSMessage in Section 6 of {{!RFC9420}} as follows.
+
+~~~ tls
+struct {
+  ...
+  select (MLSMessage.wire_format) {
+    ...
+    case mls_single_signature_key_package:
+        SingleSignatureKeyPackage key_package;
+  };
+} MLSMessage;
+
+struct {
+  ProtocolVersion version;
+  CipherSuite cipher_suite;
+  HPKEPublicKey init_key;
+  Extension extensions<V>;
+} KeyPackageCore
+
+struct {
+  KeyPackageCore core;
+  LeafNode leaf_node;
+} SingleSignatureKeyPackage
+~~~
+
+A SingleSignatureKeyPackage is created and processed like a regular KeyPackge
+with the following exceptions.
+
+- The signature around the outer KeyPackage is omitted upon creation
+- As there is no signature around the outer KeyPackage, verification is skipped
+  during verification
+- The `app_data_dictionary` in the `leaf_node` must contain a valid
+  `KeyPackageCoreHash` as defined in {{keypackage-core-hash-component}}
+  under the `component_id` TBD.
+
+# KeyPackage core hash component
+
+~~~ tls
+struct {
+  opaque key_package_core_hash;
+} KeyPackageCoreHash
+~~~
+
+The KeyPackageCoreHashComponent can be created by hashing the `core` of a
+SingleSignatureKeyPackage using the hash function of the LeafNode's ciphersuite.
+
+A KeyPackageCoreHash is only valid if two conditions are met.
+
+- The `leaf_node_source` of the LeafNode is KeyPackage
+- If the LeafNode is verified in the context of a SingleSignatureKeyPackage, the
+  `key_package_core_hash` is the hash of the `core` of that
+  SingleSignatureKeyPackage.
 
 
 # Security Considerations
@@ -57,7 +120,31 @@ TODO Security
 
 # IANA Considerations
 
-This document has no IANA actions.
+## Component Type
+
+This document requests the addition of a new Component Type under the heading of
+"Messaging Layer Security".
+
+- Value: TBD
+- key_package_core_hash
+- Where: LN
+- Recommended: Y
+- Reference: TBD
+
+
+## WireFormat
+
+This document requests the addition of a new WireFormat under the heading of
+"Messaging Layer Security".
+
+The `mls_single_signature_key_package` allows saving the creation and
+verification of a signature that is necessary when creating a regular
+KeyPackage.
+
+- Value: TBD
+- Name: mls_single_signature_key_package
+- Recommended: Y
+- Reference: TBD
 
 
 --- back
