@@ -57,9 +57,15 @@ magnitude larger than those of most non-PQ signature schemes.
 
 # Single Signature KeyPackages
 
-This document requests the registration of the
-`mls_single_signature_key_package` WireFormat and extends the select statement
-in the definition of MLSMessage in Section 6 of {{!RFC9420}} as follows.
+A SingleSignatureKeyPackage (SSKP) functions much like a regular KeyPackage with
+two exceptions: It lacks the signature around the outer KeyPackage and requires
+a component inside the LeafNode that contains a hash of the KeyPackage around
+the inner LeafNode.
+
+Since both parsing and processing of an SSKP is different from that of a regular
+KeyPackage, this document introduces a new WireFormat
+`mls_single_signature_key_package` and extends the select statement in the
+definition of MLSMessage in Section 6 of {{!RFC9420}} as follows.
 
 ~~~ tls
 struct {
@@ -84,15 +90,20 @@ struct {
 } SingleSignatureKeyPackage
 ~~~
 
-A SingleSignatureKeyPackage is created and processed like a regular KeyPackge
+A SingleSignatureKeyPackage is created and processed like a regular KeyPackage
 with the following exceptions.
 
 - The signature around the outer KeyPackage is omitted upon creation
 - As there is no signature around the outer KeyPackage, verification is skipped
   during verification
 - The `app_data_dictionary` in the `leaf_node` must contain a valid
-  `KeyPackageCoreHash` as defined in {{keypackage-core-hash-component}}
-  under the `component_id` TBD.
+  KeyPackageCoreHash as defined in {{keypackage-core-hash-component}} under the
+  `component_id` TBD.
+
+The original purpose of the signature over the KeyPackage is now served by the
+signature over the LeafNode, which by inclusion of the KeyPackageCoreHash
+provides authenticity for both the LeafNode itself _and_ the KeyPackageCore
+around it.
 
 # KeyPackage core hash component
 
@@ -102,8 +113,9 @@ struct {
 } KeyPackageCoreHash
 ~~~
 
-The KeyPackageCoreHashComponent can be created by hashing the `core` of a
-SingleSignatureKeyPackage using the hash function of the LeafNode's ciphersuite.
+The KeyPackageCoreHashComponent can be created by hashing the TLS-serialized
+`core` of a SingleSignatureKeyPackage using the hash function of the LeafNode's
+ciphersuite.
 
 A KeyPackageCoreHash is only valid if two conditions are met.
 
@@ -112,11 +124,12 @@ A KeyPackageCoreHash is only valid if two conditions are met.
   `key_package_core_hash` is the hash of the `core` of that
   SingleSignatureKeyPackage.
 
-
 # Security Considerations
 
-TODO Security
-
+Security considerations around SingleSignatureKeyPackages are the same as
+regular KeyPackages, except that content of the KeyPackageCore should not be
+trusted until the signature of the LeafNode was verified and the
+KeyPackageCoreHash validated.
 
 # IANA Considerations
 
