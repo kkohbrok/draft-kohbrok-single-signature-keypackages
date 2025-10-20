@@ -4,10 +4,10 @@
 
 This is the working area for the individual Internet-Draft, "Single Signature KeyPackages".
 
-* [Editor's Copy](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-mls-kohbrok-single-signature-keypackages.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-mls-kohbrok-single-signature-keypackages)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-mls-kohbrok-single-signature-keypackages)
-* [Compare Editor's Copy to Individual Draft](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-mls-kohbrok-single-signature-keypackages.diff)
+* [Editor's Copy](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-single-signature-keypackages.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-kohbrok-mls-single-signature-keypackages)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-kohbrok-mls-single-signature-keypackages)
+* [Compare Editor's Copy to Individual Draft](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-single-signature-keypackages.diff)
 
 
 ## Contributing

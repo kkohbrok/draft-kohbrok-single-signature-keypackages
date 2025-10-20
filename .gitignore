@@ -18,7 +18,7 @@
 /versioned/
 Gemfile.lock
 archive.json
-draft-mls-kohbrok-single-signature-keypackages.xml
+draft-kohbrok-mls-single-signature-keypackages.xml
 package-lock.json
 report.xml
 !requirements.txt

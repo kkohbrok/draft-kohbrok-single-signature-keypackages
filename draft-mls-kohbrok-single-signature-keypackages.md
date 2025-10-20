@@ -3,7 +3,7 @@ title: "Single Signature KeyPackages"
 abbrev: "sskp"
 category: info
 
-docname: draft-mls-kohbrok-single-signature-keypackages-latest
+docname: draft-kohbrok-mls-single-signature-keypackages-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
@@ -19,7 +19,7 @@ venue:
   mail: "mls@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/mls/"
   github: "kkohbrok/draft-kohbrok-single-signature-keypackages"
-  latest: "https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/draft-mls-kohbrok-single-signature-keypackages.html"
+  latest: "https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/draft-kohbrok-mls-single-signature-keypackages.html"
 
 author:
  -
