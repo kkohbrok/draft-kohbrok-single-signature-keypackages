@@ -5,7 +5,7 @@
 Messaging Layer Security                                       R. Robert
 Internet-Draft                                                K. Kohbrok
 Intended status: Informational                               Phoenix R&D
-Expires: 11 April 2026                                    8 October 2025
+Expires: 23 April 2026                                   20 October 2025
 
 
                       Single Signature KeyPackages
@@ -13,7 +13,8 @@ Expires: 11 April 2026                                    8 October 2025
 
 Abstract
 
-   TODO Abstract
+   Single Signature KeyPackages improve the overhead of creating,
+   transmitting and verifying MLS KeyPackages by removing one signature.
 
 About This Document
 
@@ -50,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2026.
+   This Internet-Draft will expire on 23 April 2026.
 
 Copyright Notice
 
