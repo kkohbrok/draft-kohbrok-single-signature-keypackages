@@ -39,8 +39,8 @@ informative:
 
 --- abstract
 
-TODO Abstract
-
+Single Signature KeyPackages improve the overhead of creating, transmitting and
+verifying MLS KeyPackages by removing one signature.
 
 --- middle
 
