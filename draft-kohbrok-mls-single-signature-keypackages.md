@@ -138,7 +138,7 @@ KeyPackageCoreHash validated.
 This document requests the addition of a new Component Type under the heading of
 "Messaging Layer Security".
 
-- Value: TBD
+- Value: TBD (suggested value 0x0009)
 - key_package_core_hash
 - Where: LN
 - Recommended: Y
