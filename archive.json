@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-14T00:40:58.182843+00:00",
+  "timestamp": "2025-12-16T00:37:52.285817+00:00",
   "repo": "kkohbrok/draft-kohbrok-single-signature-keypackages",
   "labels": [
     {
@@ -50,5 +50,40 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOP9t1vc6491Y6",
+      "title": "Add a component ID",
+      "url": "https://github.com/kkohbrok/draft-kohbrok-single-signature-keypackages/pull/1",
+      "state": "OPEN",
+      "author": "rohanmahy",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-12-15T16:32:54Z",
+      "updatedAt": "2025-12-15T16:33:28Z",
+      "baseRepository": "kkohbrok/draft-kohbrok-single-signature-keypackages",
+      "baseRefName": "main",
+      "baseRefOid": "36956fe3cc3e8e7234ab80010f5f1286c936621b",
+      "headRepository": "rohanmahy/draft-kohbrok-single-signature-keypackages",
+      "headRefName": "component-id",
+      "headRefOid": "78dcc9f365cecd040226206dea1c795f03d25cf3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "I reserved these (first for adopted WG items, then in order of original publication) for all MLS drafts with a component id:\r\n- 0x0006 `apq_info` - PQ combiners draft\r\n- 0x0007 `associated_parties` - associated parties draft\r\n- 0x0008 `external_receivers` - semiprivate message draft\r\n- 0x0009 `key_package_core_hash` - this draft\r\n- 0x000A `root_private_signature_key` - private external messages draft\r\n- 0x000B `external_encryption_public_key` - private external messages draft",
+          "createdAt": "2025-12-15T16:33:28Z",
+          "updatedAt": "2025-12-15T16:33:28Z"
+        }
+      ],
+      "reviews": []
+    }
+  ]
 }
