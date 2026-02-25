@@ -39,15 +39,17 @@ informative:
 
 --- abstract
 
-This draft specifies modified versions of MLS KeyPackage and Commit messages
-that require one less signature than their original counterparts.
+This draft specifies modified versions of MLS KeyPackage messages, as well as
+MLS PublicMessages and PrivateMessages holding Commits or Update Proposals that
+require one less signature than their original counterparts.
 
 --- middle
 
 # Introduction
 
-Both MLS KeyPackage and Commit messages can be safely sent with one fewer
-signature than specified in {{!RFC9420}}, although the latter only if certain
+Both MLS KeyPackage messages, as well as PublicMessages and PrivateMessages
+holding Commits and Update Proposals can be safely sent with one fewer signature
+than specified in {{!RFC9420}}, although the latter two only if certain
 conditions are met.
 
 Regular MLS KeyPackages require two signatures: One over the LeafNode and one
@@ -55,12 +57,13 @@ over the KeyPackage around it. This draft introduced a LeafNode component that
 contains a hash over the KeyPackage fields surrounding the LeafNode. As a
 consequence, verifying the LeafNode also verifies the KeyPackage.
 
-For Commits with an UpdatePath the issue is similar: One signature covers the
-LeafNode in the UpdatePath and one signature covers the majority of the struct
-that ends up being sent over the wire. This draft proposes a new type of Commit
-with only one signature, although here the signature can only be ommitted if the
-Commit contains an UpdatePath and if the LeafNode in the UpdatePath doesn't
-change the sender's signature public key.
+For Commits with an UpdatePath or Update Proposals (sent as PublicMessage or
+PrivateMessage) the issue is similar: One signature covers the LeafNode and one
+signature covers the majority of the struct that ends up being sent over the
+wire. This draft proposes new types of PublicMessage and PrivateMessage with
+only one signature, although the signature can only be ommitted for Commits that
+contain an UpdatePath and for Commits and Update Proposals if the LeafNode
+doesn't change the sender's signature public key.
 
 Saving a signature can result in a significant decrease in computational or
 bandwidth cost, especially in the context of PQ-secure signature schemes such as
@@ -78,26 +81,28 @@ struct {
   ...
   select (MLSMessage.wire_format) {
     ...
-    case mls_single_signature_key_package:
-        SingleSignatureKeyPackage key_package;
-        SSPrivateMessage private_message;
-        SSPublicMessage public_message;
+    case mls_one_signature_key_package:
+      OneSignatureKeyPackage key_package;
+      OSPrivateMessage private_message;
+      OSPublicMessage public_message;
   };
 } MLSMessage;
 ~~~
 
-See {{single-signature-keypackages}} for the definition of SingleSignatureKeyPackage and {{single-signature-commits}} for the definitions of SSPrivateMessage and SSPublicMessage.
+See {{one-signature-keypackages}} for the definition of OneSignatureKeyPackage
+and {{one-signature-commits-and-update-proposals}} for the definitions of
+OSPrivateMessage and OSPublicMessage.
 
-# Single Signature KeyPackages
+# One Signature KeyPackages
 
-A SingleSignatureKeyPackage (SSKP) functions much like a regular KeyPackage with
+A OneSignatureKeyPackage (OSKP) functions much like a regular KeyPackage with
 two exceptions: It lacks the signature around the outer KeyPackage and requires
 a component inside the LeafNode that contains a hash of the KeyPackage around
 the inner LeafNode.
 
-Since both parsing and processing of an SSKP is different from that of a regular
+Since both parsing and processing of an OSKP is different from that of a regular
 KeyPackage, this document introduces a new WireFormat
-`mls_single_signature_key_package` and extends the select statement in the
+`mls_one_signature_key_package` and extends the select statement in the
 definition of MLSMessage in Section 6 of {{!RFC9420}} as follows.
 
 ~~~ tls
@@ -111,10 +116,10 @@ struct {
 struct {
   KeyPackageCore core;
   LeafNode leaf_node;
-} SingleSignatureKeyPackage
+} OneSignatureKeyPackage
 ~~~
 
-A SingleSignatureKeyPackage is created and processed like a regular KeyPackage
+A OneSignatureKeyPackage is created and processed like a regular KeyPackage
 with the following exceptions.
 
 - The signature around the outer KeyPackage is omitted upon creation
@@ -138,34 +143,33 @@ struct {
 ~~~
 
 The KeyPackageCoreHash can be created by hashing the TLS-serialized `core` of a
-SingleSignatureKeyPackage using the hash function of the LeafNode's ciphersuite.
+OneSignatureKeyPackage using the hash function of the LeafNode's ciphersuite.
 
 A KeyPackageCoreHash is only valid if two conditions are met.
 
 - The `leaf_node_source` of the LeafNode is KeyPackage
-- If the LeafNode is verified in the context of a SingleSignatureKeyPackage, the
+- If the LeafNode is verified in the context of a OneSignatureKeyPackage, the
   `key_package_core_hash` is the hash of the `core` of that
-  SingleSignatureKeyPackage.
+  OneSignatureKeyPackage.
 
-# Single Signature Commits
+# One Signature Commits and Update Proposals
 
-A single signature commit (SSC) is a commit with an UpdatePath that is sent as
-either a PublicMessage or a PrivateMessage. The difference between an SSC and a
-regular commit is the same as between an SSKP and a regular KeyPackage. The
-signature over the whole struct is omitted and instead a hash over its outter
-part is placed as acomponent in LeafNode of the UpdatePath.
+MLS PublicMessages and PrivateMessages carrying a Commit with UpdatePath or an
+Update Proposal can also be created with only one signature as long as the
+signature key of the sender is not changed by the respective operation. The
+resulting structs are called OSPublicMessage and OSPrivateMessage respectively.
 
-One limitation of an SSC is that it only works if the signature public key in
-the UpdatePath's LeafNode is the same as the signature public key in the
-sender's current leaf. As such an SSC MUST NOT be constructed if that is the
-case.
+The principle behind saving the signature is the same as for OSKPs. The
+signature over the whole struct is omitted and instead a hash over the otherwise
+signed part of the struct (minus the LeafNode) is placed as a component in the
+LeafNode of the UpdatePath or the Update Proposal.
 
-The core change for SSCs as compared to regular commits is that the
-FramedContentAuthData is replaced by the SSFramedContentAuthData, where the
-latter lacks the signature that is part of the former.
+The core change in framing an OSPublicMessage or OSPrivateMessage as compared to
+its regular counterparts is that the FramedContentAuthData is replaced by the
+OSFramedContentAuthData, where the latter lacks the signature that is part of
+the former.
 
-As a consequence, other framing struct change slightly with an SSPublicMessage
-or SSPrivateMessage as the final struct.
+As a consequence, other framing structs also change slightly.
 
 ~~~ tls
 struct {
@@ -180,18 +184,18 @@ struct {
     case proposal:
       struct{};
   };
-} SSFramedContentAuthData;
+} OSFramedContentAuthData;
 
 struct {
   WireFormat wire_format;
   FramedContent content;
-  SSFramedContentAuthData auth;
-} SSAuthenticatedContent;
+  OSFramedContentAuthData auth;
+} OSAuthenticatedContent;
 
 struct {
   FramedContentTBS content_tbs;
-  SSFramedContentAuthData auth;
-} SSAuthenticatedContentTBM;
+  OSFramedContentAuthData auth;
+} OSAuthenticatedContentTBM;
 
 struct {
   select (PrivateMessage.content_type) {
@@ -205,9 +209,9 @@ struct {
         Commit commit;
   };
 
-  SSFramedContentAuthData auth;
+  OSFramedContentAuthData auth;
   opaque padding[length_of_padding];
-} PrivateMessageContent;
+} OSPrivateMessageContent;
 
 struct {
   FramedContent content;
@@ -220,24 +224,34 @@ struct {
       case new_member_proposal:
           struct{};
   };
-} SSPublicMessage;
+} OSPublicMessage;
 ~~~
 
-Both SSPublicMessages and SSPrivateMessages MUST have `content_type = commit`
-and the Commit contained within MUST have an UpdatePath. If the `sender_type` of
-an SSPublicMessage is `member` or if it is `new_member_commit` and the commit is
-a Resync, the LeafNode in the UpdatePath MUST NOT change the signature public
-key of the sender.
+For both OSPublicMessages and OSPrivateMessages one of the following MUST be true:
 
-Otherwise, creation and processing an SSPublicMessage or SSPrivateMessage is the
+- `content_type = commit` and the Commit contained within MUST have an UpdatePath
+- `content_type = proposal` and `proposal_type = update`
+
+For Commits and Update Proposals, the signature public key in the LeafNode MUST
+be the same as the sender's current LeafNode. This MUST also be true for Commits
+with `sender_type = new_member_commit` that contain a Remove Proposal targeting
+the sender's original leaf.
+
+Otherwise, creation and processing an OSPublicMessage or OSPrivateMessage is the
 same as for regular PublicMessages or PrivateMessages, except that there is no
-signature to verify in the SSFramedContentAuthData. However, the LeafNode in the
-UpdatePath MUST contain a CommitCoreHash component in the UpdatePath's LeafNode.
+signature to verify in the OSFramedContentAuthData. However, the LeafNode (in
+the UpdatePath if it's a commit or in the Update if it's a Proposal) MUST
+contain an UpdateCoreHash component.
+
+# Update core hash component
+
+The UpdateCoreHash component ensures that the signature over the LeafNode covers
+whatever the omitted signature would have covered.
 
 ~~~ tls
 struct {
-  opaque commit_core_hash;
-} CommitCoreHash
+  opaque update_core_hash;
+} UpdateCoreHash
 
 struct {
   opaque group_id<V>;
@@ -245,36 +259,46 @@ struct {
     Sender sender;
     opaque authenticated_data<V>;
 
-    ProposalOrRef proposals<V>;
-    UpdatePathNode nodes<V>;
+    ContentType content_type;
+    select (FramedContent.content_type) {
+      case proposal:
+        ProposalType proposal_type;
+      case commit:
+        ProposalOrRef proposals<V>;
+        UpdatePathNode nodes<V>;
+      case application:
+        struct {};
+    };
 } OutterFramedContent
 
 struct {
   ProtocolVersion version = mls10;
   WireFormat wire_format;
   OutterFramedContent content;
-  GroupContect context;
-} SSFramedContentTBH
+  GroupContext context;
+} OSFramedContentTBH
 ~~~
 
-The `commit_core_hash` MUST be a hash over the commit's TLS-serialized
-SSFramedContentTBH using the hash function of the group's ciphersuite.
+The `update_core_hash` MUST be a hash over the commit's TLS-serialized
+OSFramedContentTBH using the hash function of the group's ciphersuite.
 
-SSFramedContentTBH is the same as FramedContentTBS as defined in {{!RFC9420}},
-except that it always contains a GroupContext (because commits only have
-`member` or `new_member_commit` as `sender_type`) and that it contains an
-OutterFrameContent instead of a regular FramedContent. OutterFramedContent is
-the same as FramedContent except that it contains only content relevant to a
-Commit with an UpdatePath and that it omits the UpdatePath's LeafNode. Omitting
-the LeafNode prevents a circular dependency when computing the
-`commit_core_hash` for inclusion in said LeafNode.
+OSFramedContentTBH is the same as the FramedContentTBS struct defined in
+{{!RFC9420}}, except that it always contains a GroupContext (because Commits and
+Update Proposals only have `member` or `new_member_commit` as `sender_type`) and
+that it contains an OutterFramedContent instead of a regular FramedContent.
+
+OutterFramedContent in turn is the same as FramedContent except that, depending
+on `content_type`, it either contains only content relevant to a Commit with an
+UpdatePath or an Update Proposal. In both cases, it omits the actual LeafNode.
+to prevent a circular dependency when computing the `update_core_hash` for
+inclusion in said LeafNode.
 
 # Security Considerations
 
-Security considerations around the single signature variants are the same as
+Security considerations around the one signature variants are the same as
 those of their regular MLS counterparts, except their content should not be
 trusted until the signature of the LeafNode was verified and the
-KeyPackageCoreHash or CommitCoreHash component was validated.
+KeyPackageCoreHash or UpdateCoreHash component was validated.
 
 # IANA Considerations
 
@@ -286,7 +310,7 @@ of "Messaging Layer Security".
 ### KeyPackageCoreHash
 
 The KeyPackageCoreHash component contains a hash over the outter parts of a
-SingleSignatureKeyPackage.
+OneSignatureKeyPackage.
 
 - Value: TBD (suggested value 0x0009)
 - key_package_core_hash
@@ -294,14 +318,14 @@ SingleSignatureKeyPackage.
 - Recommended: Y
 - Reference: TBD
 
-### CommitCoreHash
+### UpdateCoreHash
 
-The CommitCoreHash component contains a hash over the parts of an
-SSPublicMessage or SSPrivateMessage that would otherwise be covered by a
+The UpdateCoreHash component contains a hash over the parts of an
+OSPublicMessage or OSPrivateMessage that would otherwise be covered by a
 signature.
 
 - Value: TBD (suggested value 0x000C)
-- commit_core_hash
+- update_core_hash
 - Where: LN
 - Recommended: Y
 - Reference: TBD
@@ -311,36 +335,38 @@ signature.
 This document requests the addition of two new WireFormats under the heading of
 "Messaging Layer Security".
 
-### MLSSingleSignatureKeyPackage
+### MLSOneSignatureKeyPackage
 
-The `mls_single_signature_key_package` allows saving the creation and
+The `mls_one_signature_key_package` allows saving the creation and
 verification of a signature that is necessary when creating a regular
 KeyPackage.
 
 - Value: TBD
-- Name: mls_single_signature_key_package
+- Name: mls_one_signature_key_package
 - Recommended: Y
 - Reference: TBD
 
-### MLSSingleSignaturePrivateMessage
+### MLSOneSignaturePrivateMessage
 
-The `mls_single_signature_private_message` allows saving the creation and
+The `mls_one_signature_private_message` allows saving the creation and
 verification of a signature that is necessary when creating a regular
-PrivateMessage with a Commit that contains an UpdatePath.
+PrivateMessage that either contains a Commit with an UpdatePath or an Update
+Proposal.
 
 - Value: TBD
-- Name: mls_single_signature_private_message
+- Name: mls_one_signature_private_message
 - Recommended: Y
 - Reference: TBD
 
-### MLSSingleSignaturePublicMessage
+### MLSOneSignaturePublicMessage
 
-The `mls_single_signature_public_message` allows saving the creation and
+The `mls_one_signature_public_message` allows saving the creation and
 verification of a signature that is necessary when creating a regular
-PublicMessage with a Commit that contains an UpdatePath.
+PublicMessage that either contains a Commit with an UpdatePath or an Update
+Proposal.
 
 - Value: TBD
-- Name: mls_single_signature_public_message
+- Name: mls_one_signature_public_message
 - Recommended: Y
 - Reference: TBD
 
