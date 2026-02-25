@@ -13,8 +13,9 @@ Expires: 29 August 2026                                 25 February 2026
 
 Abstract
 
-   This draft specifies modified versions of MLS KeyPackages and Commits
-   that require one less signature than their original counterparts.
+   This draft specifies modified versions of MLS KeyPackage and Commit
+   messages that require one less signature than their original
+   counterparts.
 
 About This Document
 
@@ -88,8 +89,9 @@ Table of Contents
 
 1.  Introduction
 
-   Both MLS KeyPackages and MLS Commit messages can be safely sent with
-   one fewer signature than specified in [RFC9420].
+   Both MLS KeyPackage and Commit messages can be safely sent with one
+   fewer signature than specified in [RFC9420], although the latter only
+   if certain conditions are met.
 
    Regular MLS KeyPackages require two signatures: One over the LeafNode
    and one over the KeyPackage around it.  This draft introduced a
