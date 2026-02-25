@@ -1,13 +1,13 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# Single Signature KeyPackages
+# Fewer signatures in MLS
 
-This is the working area for the individual Internet-Draft, "Single Signature KeyPackages".
+This is the working area for the individual Internet-Draft, "Fewer signatures in MLS".
 
-* [Editor's Copy](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-single-signature-keypackages.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-kohbrok-mls-single-signature-keypackages)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-kohbrok-mls-single-signature-keypackages)
-* [Compare Editor's Copy to Individual Draft](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-single-signature-keypackages.diff)
+* [Editor's Copy](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-fewer-signatures.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-kohbrok-mls-fewer-signatures)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-kohbrok-mls-fewer-signatures)
+* [Compare Editor's Copy to Individual Draft](https://kkohbrok.github.io/draft-kohbrok-single-signature-keypackages/#go.draft-kohbrok-mls-fewer-signatures.diff)
 
 
 ## Contributing
