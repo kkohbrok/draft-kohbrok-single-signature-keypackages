@@ -1431,10 +1431,35 @@ UpdatePath MUST contain a CommitCoreHash component in the UpdatePath's LeafNode.
 struct {
   opaque commit_core_hash;
 } CommitCoreHash
+
+struct {
+  opaque group_id&lt;V&gt;;
+    uint64 epoch;
+    Sender sender;
+    opaque authenticated_data&lt;V&gt;;
+
+    ProposalOrRef proposals&lt;V&gt;;
+    UpdatePathNode nodes&lt;V&gt;;
+} OutterFramedContent
+
+struct {
+  ProtocolVersion version = mls10;
+  WireFormat wire_format;
+  OutterFramedContent content;
+  GroupContect context;
+} SSFramedContentTBH
 </pre><a href="#section-4-8" class="pilcrow">¶</a>
 </div>
 <p id="section-4-9">The <code>commit_core_hash</code> MUST be a hash over the commit's TLS-serialized
-FramedContentTBS using the hash function of the group's ciphersuite.<a href="#section-4-9" class="pilcrow">¶</a></p>
+SSFramedContentTBH using the hash function of the group's ciphersuite.<a href="#section-4-9" class="pilcrow">¶</a></p>
+<p id="section-4-10">SSFramedContentTBH is the same as FramedContentTBS as defined in <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>,
+except that it always contains a GroupContext (because commits only have
+<code>member</code> or <code>new_member_commit</code> as <code>sender_type</code>) and that it contains an
+OutterFrameContent instead of a regular FramedContent. OutterFramedContent is
+the same as FramedContent except that it contains only content relevant to a
+Commit with an UpdatePath and that it omits the UpdatePath's LeafNode. Omitting
+the LeafNode prevents a circular dependency when computing the
+<code>commit_core_hash</code> for inclusion in said LeafNode.<a href="#section-4-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">

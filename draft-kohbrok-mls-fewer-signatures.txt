@@ -282,8 +282,36 @@ Table of Contents
      opaque commit_core_hash;
    } CommitCoreHash
 
+   struct {
+     opaque group_id<V>;
+       uint64 epoch;
+       Sender sender;
+       opaque authenticated_data<V>;
+
+       ProposalOrRef proposals<V>;
+       UpdatePathNode nodes<V>;
+   } OutterFramedContent
+
+   struct {
+     ProtocolVersion version = mls10;
+     WireFormat wire_format;
+     OutterFramedContent content;
+     GroupContect context;
+   } SSFramedContentTBH
+
    The commit_core_hash MUST be a hash over the commit's TLS-serialized
-   FramedContentTBS using the hash function of the group's ciphersuite.
+   SSFramedContentTBH using the hash function of the group's
+   ciphersuite.
+
+   SSFramedContentTBH is the same as FramedContentTBS as defined in
+   [RFC9420], except that it always contains a GroupContext (because
+   commits only have member or new_member_commit as sender_type) and
+   that it contains an OutterFrameContent instead of a regular
+   FramedContent.  OutterFramedContent is the same as FramedContent
+   except that it contains only content relevant to a Commit with an
+   UpdatePath and that it omits the UpdatePath's LeafNode.  Omitting the
+   LeafNode prevents a circular dependency when computing the
+   commit_core_hash for inclusion in said LeafNode.
 
 5.  Security Considerations
 
